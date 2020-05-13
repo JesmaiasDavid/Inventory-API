@@ -8,7 +8,11 @@ import java.util.List;
 public class Supplier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="supplier_seq")
+    @SequenceGenerator(
+            name="supplier_seq",
+            sequenceName="supplier_sequence",
+            allocationSize=1)
     private int supplierId;
 
     private String supplierName;
@@ -31,44 +35,60 @@ public class Supplier {
     Supplier() {
     }
 
-    Supplier(Builder builder) {
-        this.supplierId = builder.supplierId;
-        this.supplierName = builder.supplierName;
-        this.supplierCompany = builder.supplierCompany;
-        this.createdDateTime = builder.createdDateTime;
-        this.createdUser = builder.createdUser;
-        this.lastModifiedDateTime = builder.lastModifiedDateTime;
-        this.lastModifiedUser = builder.lastModifiedUser;
-    }
-
-
     public int getSupplierId() {
         return supplierId;
     }
 
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
     public String getSupplierName() {
-        return this.supplierName;
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public String getSupplierCompany() {
-        return this.supplierCompany;
+        return supplierCompany;
     }
 
+    public void setSupplierCompany(String supplierCompany) {
+        this.supplierCompany = supplierCompany;
+    }
 
     public Date getCreatedDateTime() {
         return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     public String getCreatedUser() {
         return createdUser;
     }
 
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+
     public Date getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
 
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
     public String getLastModifiedUser() {
         return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 
     @PreUpdate
@@ -84,59 +104,7 @@ public class Supplier {
         createdDateTime=now;
     }
 
-    public static class Builder {
 
-        private int supplierId;
-        private String supplierName;
-        private String supplierCompany;
-
-        private Date createdDateTime;
-
-        private String createdUser;
-
-        private Date lastModifiedDateTime;
-
-        private String lastModifiedUser;
-
-        public Builder supplierId(int supplierId) {
-            this.supplierId = supplierId;
-            return this;
-        }
-
-        public Builder supplierName(String supplierName) {
-            this.supplierName = supplierName;
-            return this;
-        }
-
-        public Builder supplierCompany(String supplierCompany) {
-            this.supplierCompany = supplierCompany;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime) {
-            this.createdDateTime = createdDateTime;
-            return this;
-        }
-
-        public Builder createdUser(String createdUser) {
-            this.createdUser = createdUser;
-            return this;
-        }
-
-        public Builder lastModifiedDateTime(Date lastModifiedDateTime) {
-            this.lastModifiedDateTime = lastModifiedDateTime;
-            return this;
-        }
-
-        public Builder lastModifiedUser(String lastModifiedUser) {
-            this.lastModifiedUser = lastModifiedUser;
-            return this;
-        }
-
-        public Supplier build() {
-            return new Supplier(this);
-        }
-    }
 
     @Override
     public String toString() {

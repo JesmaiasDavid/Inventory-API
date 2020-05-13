@@ -1,7 +1,6 @@
 package inventoryservice;
 
 import inventoryservice.domain.admin.Category;
-import inventoryservice.factory.admin.CategoryFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 

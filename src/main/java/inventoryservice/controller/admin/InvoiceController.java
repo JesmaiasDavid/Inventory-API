@@ -3,7 +3,6 @@ package inventoryservice.controller.admin;
 import inventoryservice.domain.admin.Category;
 import inventoryservice.domain.admin.Invoice;
 import inventoryservice.domain.admin.ResponseObject;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,20 +12,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/invoice")
+//@RequestMapping("/invoice")
 public class InvoiceController {
 
     @Autowired
     private InvoiceService service;
 
-    @PostMapping(value = "/create",consumes = "application/json")
+    @PostMapping(value = "/invoices",consumes = "application/json")
     @ResponseBody
     public ResponseEntity create(@RequestBody Invoice invoice) {
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Created Successfully");
         String total= Double.toString(invoice.getTotal());
-        if (total==null ){
+        if (total==null|| invoice.getStatus()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Total value cannot be null");
+            responseObject.setResponseDescription("Enter a total and/or status");
         }else {
             service.add(invoice);
             responseObject.setResponse(invoice);
@@ -36,21 +35,24 @@ public class InvoiceController {
         return ResponseEntity.ok(responseObject);
     }
 
-    @PostMapping(value = "/update",consumes = "application/json")
+    @PutMapping(value = "/invoices/{id}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity update(@RequestBody Invoice invoice) {
-        Invoice invoice1=service.get(invoice.getInvoiceId());
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Created Successfully");
+    public ResponseEntity update(@RequestBody Invoice invoice, @PathVariable int id) {
+        Invoice invoice1=service.get(id);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Updated Successfully");
         String total= Double.toString(invoice.getTotal());
 
         if(invoice1==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this invoice does not exist!");
         }else
-        if (total==null ){
+        if  (total==null|| invoice.getStatus()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Total value cannot be null");
+            responseObject.setResponseDescription("Enter a total and/or status");
         }else {
+
+            invoice.setInvoiceId(invoice1.getInvoiceId());
+            invoice.setDateTimeGenerated(invoice1.getDateTimeGenerated());
             service.add(invoice);
             responseObject.setResponse(invoice);
         }
@@ -60,11 +62,11 @@ public class InvoiceController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/invoices/{id}")
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
         Invoice invoice=service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Deleted Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Deleted Successfully");
         if (invoice==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this invoice does not exist!");
@@ -75,11 +77,11 @@ public class InvoiceController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/invoices/{id}")
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Invoice invoice=service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Found Successfully");
         if (invoice==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this invoice does not exist!");
@@ -91,11 +93,11 @@ public class InvoiceController {
     }
 
 
-    @GetMapping("/get/all")
+    @GetMapping("/invoices")
     @ResponseBody
     public ResponseEntity getAll() {
         List<Invoice> invoices = service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"All invoices Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All invoices Found Successfully");
         if (invoices==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, invoices not found!");

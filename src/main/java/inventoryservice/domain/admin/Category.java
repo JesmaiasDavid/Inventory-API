@@ -1,17 +1,30 @@
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
-public class Category {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Category  {
+
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="category_seq")
+    @SequenceGenerator(
+          name="category_seq",
+         sequenceName="category_sequence",
+         allocationSize=1)
     private int id;
 
     private String categoryName;
+
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDateTime;
@@ -23,8 +36,10 @@ public class Category {
 
     private String lastModifiedUser;
 
+
     //bi-directional many-to-one association to Product
-    @OneToMany(mappedBy="category", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy="category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 
     //bi-directional many-to-one association to Stock
@@ -35,56 +50,84 @@ public class Category {
 
     public Category(){}
 
-   public Category(Builder builder)
-   {
-     this.id=builder.id;
-     this.categoryName=builder.categoryName;
-     this.createdDateTime=builder.createdDateTime;
-     this.createdUser=builder.createdUser;
-     this.lastModifiedDateTime=builder.lastModifiedDateTime;
-     this.lastModifiedUser=builder.lastModifiedUser;
-   }
+    public int getId() {
+        return id;
+    }
 
-   public int getId(){
-       return this.id;
-   }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-   public String getCategoryName(){
-       return this.categoryName;
-   }
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
     public Date getCreatedDateTime() {
         return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     public String getCreatedUser() {
         return createdUser;
     }
 
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+
     public Date getLastModifiedDateTime() {
         return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
     }
 
     public String getLastModifiedUser() {
         return lastModifiedUser;
     }
 
-    public List<Stock> getStocks() {
-        return stocks;
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 
+
     public List<Product> getProducts() {
-        return this.products;
+        return products;
     }
+
 
     public void setProducts(List<Product> products) {
         this.products = products;
     }
 
+    @JsonIgnore
+    public List<Stock> getStocks() {
+        return stocks;
+    }
+
+    @JsonIgnore
+    public void setStocks(List<Stock> stocks) {
+        this.stocks = stocks;
+    }
+
+
 
     public void addProduct(Product product) {
         getProducts().add(product);
         product.setCategory(this);
+    }
+
+    public void removeProduct(Product product) {
+        getProducts().remove(product);
+        product.setCategory(null);
     }
 
     @PreUpdate
@@ -96,59 +139,10 @@ public class Category {
     @PrePersist
     public void prePersist() {
         Date now = new Date();
+        createdDateTime=now;
         lastModifiedDateTime = now;
     }
 
-
-
-    public static class Builder{
-
-        private int id;
-        private String categoryName;
-
-       private Date createdDateTime;
-
-       private String createdUser;
-
-
-       private Date lastModifiedDateTime;
-
-       private String lastModifiedUser;
-
-        public Builder id(int id){
-          this.id=id;
-          return this;
-        }
-
-        public Builder name(String name){
-            this.categoryName=name;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime){
-            this.createdDateTime=createdDateTime;
-            return this;
-        }
-
-       public Builder createdUser(String createdUser){
-           this.createdUser=createdUser;
-           return this;
-       }
-
-       public Builder lastModifiedDateTime(Date lastModifiedDateTime){
-           this.lastModifiedDateTime=lastModifiedDateTime;
-           return this;
-       }
-
-       public Builder lastModifiedUser(String lastModifiedUser){
-           this.lastModifiedUser=lastModifiedUser;
-           return this;
-       }
-
-        public Category build(){
-            return new Category(this);
-        }
-    }
 
 
     @Override

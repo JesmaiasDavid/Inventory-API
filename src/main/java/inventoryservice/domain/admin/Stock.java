@@ -7,7 +7,11 @@ import java.util.Date;
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="stock_seq")
+    @SequenceGenerator(
+            name="stock_seq",
+            sequenceName="stock_sequence",
+            allocationSize=1)
     private int stockId;
 
     private double stockQuantity;
@@ -17,8 +21,6 @@ public class Stock {
 
     private String createdUser;
 
-    @Temporal(TemporalType.DATE)
-    private Date dateStock;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedDateTime;
@@ -39,48 +41,55 @@ public class Stock {
     private Supplier supplier;
 
 
-
-
-
     Stock(){}
 
-    Stock (Builder builder){
-
-        this.stockId=builder.stockId;
-        this.stockQuantity=builder.stockQuantity;
-        this.createdDateTime=builder.createdDateTime;
-        this.createdUser=builder.createdUser;
-        this.lastModifiedDateTime=builder.lastModifiedDateTime;
-        this.lastModifiedUser=builder.lastModifiedUser;
-        this.dateStock=builder.dateStock;
+    public int getStockId() {
+        return stockId;
     }
 
-    public int getStockId(){
-        return this.stockId;
+    public void setStockId(int stockId) {
+        this.stockId = stockId;
     }
 
-    public double getStockQuantity(){
-        return this.stockQuantity;
+    public double getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(double stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 
     public Date getCreatedDateTime() {
         return createdDateTime;
     }
 
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
     public String getCreatedUser() {
         return createdUser;
     }
 
-    public Date getDateStock() {
-        return dateStock;
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
     }
+
 
     public Date getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
 
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
     public String getLastModifiedUser() {
         return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 
     @PreUpdate
@@ -94,70 +103,8 @@ public class Stock {
         Date now = new Date();
         lastModifiedDateTime = now;
         createdDateTime=now;
-        dateStock=now;
     }
 
-    public static class Builder{
-
-        private int stockId;
-        private int productId;
-        private double stockQuantity;
-
-        private Date createdDateTime;
-
-        private String createdUser;
-
-        private Date dateStock;
-
-        private Date lastModifiedDateTime;
-
-        private String lastModifiedUser;
-
-
-        public Builder stockId(int stockId){
-            this.stockId=stockId;
-            return this;
-        }
-
-        public Builder productId(int productId){
-            this.productId=productId;
-            return this;
-        }
-
-        public Builder stockQuantity(double stockQuantity){
-            this.stockQuantity=stockQuantity;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime){
-            this.createdDateTime=createdDateTime;
-            return this;
-        }
-
-        public Builder createdUser(String createdUser){
-            this.createdUser=createdUser;
-            return this;
-        }
-
-        public Builder lastModifiedDateTime(Date lastModifiedDateTime){
-            this.lastModifiedDateTime=lastModifiedDateTime;
-            return this;
-        }
-
-        public Builder dateStock(Date dateStock){
-            this.dateStock=dateStock;
-            return  this;
-        }
-
-        public Builder lastModifiedUser(String lastModifiedUser){
-            this.lastModifiedUser=lastModifiedUser;
-            return this;
-        }
-
-        public Stock build(){
-            return new Stock(this);
-        }
-    }
 
     @Override
     public String toString() {
@@ -166,7 +113,6 @@ public class Stock {
                 ", stockQuantity=" + stockQuantity +
                 ", createdDateTime=" + createdDateTime +
                 ", createdUser='" + createdUser + '\'' +
-                ", dateStock=" + dateStock +
                 ", lastModifiedDateTime=" + lastModifiedDateTime +
                 ", lastModifiedUser='" + lastModifiedUser + '\'' +
                 '}';

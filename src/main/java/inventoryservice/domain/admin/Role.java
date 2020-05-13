@@ -1,13 +1,20 @@
 package inventoryservice.domain.admin;
 
+import inventoryservice.domain.user.UserRole;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="role_seq")
+    @SequenceGenerator(
+            name="role_seq",
+            sequenceName="role_sequence",
+            allocationSize=1)
     private int roleId;
 
     private String roleName;
@@ -22,40 +29,80 @@ public class Role {
 
     private String lastModifiedUser;
 
+
+    @OneToMany(mappedBy="role", cascade = CascadeType.ALL)
+    private List<UserRole> userRoles;
+
     Role() {
     }
 
-    Role(Builder builder) {
-        this.roleId = builder.roleId;
-        this.roleName = builder.roleName;
-        this.createdDateTime = builder.createdDateTime;
-        this.createdUser = builder.createdUser;
-        this.lastModifiedDateTime = builder.lastModifiedDateTime;
-        this.lastModifiedUser = builder.lastModifiedUser;
+    public int getRoleId() {
+        return roleId;
     }
 
-    public int getRoleId() {
-        return this.roleId;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
     public String getRoleName() {
-        return this.roleName;
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public Date getCreatedDateTime() {
         return createdDateTime;
     }
 
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
     public String getCreatedUser() {
         return createdUser;
+    }
+
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
     }
 
     public Date getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
 
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
     public String getLastModifiedUser() {
         return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public UserRole addUserRole(UserRole userRole) {
+        getUserRoles().add(userRole);
+        userRole.setRole(this);
+
+        return userRole;
+    }
+
+    public UserRole removeUserRole(UserRole userRole) {
+        getUserRoles().remove(userRole);
+        userRole.setRole(null);
+        return userRole;
     }
 
     @PreUpdate
@@ -71,54 +118,6 @@ public class Role {
         createdDateTime=now;
     }
 
-    public static class Builder {
-
-        private int roleId;
-        private String roleName;
-
-        private Date createdDateTime;
-
-        private String createdUser;
-
-
-        private Date lastModifiedDateTime;
-
-        private String lastModifiedUser;
-
-        public Builder roleId(int roleId) {
-            this.roleId = roleId;
-            return this;
-        }
-
-        public Builder roleName(String roleName) {
-            this.roleName = roleName;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime) {
-            this.createdDateTime = createdDateTime;
-            return this;
-        }
-
-        public Builder createdUser(String createdUser) {
-            this.createdUser = createdUser;
-            return this;
-        }
-
-        public Builder lastModifiedDateTime(Date lastModifiedDateTime) {
-            this.lastModifiedDateTime = lastModifiedDateTime;
-            return this;
-        }
-
-        public Builder lastModifiedUser(String lastModifiedUser) {
-            this.lastModifiedUser = lastModifiedUser;
-            return this;
-        }
-
-        public Role build() {
-            return new Role(this);
-        }
-    }
 
     @Override
     public String toString() {

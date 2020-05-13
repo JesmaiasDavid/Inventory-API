@@ -1,16 +1,25 @@
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="product_seq")
+    @SequenceGenerator(
+            name="product_seq",
+            sequenceName="product_sequence",
+            allocationSize=1)
     private int productId;
 
     private String productName;
@@ -30,7 +39,7 @@ public class Product {
     private String lastModifiedUser;
 
     //bi-directional many-to-one association to Category
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="categoryId")
     private Category category;
 
@@ -53,54 +62,75 @@ public class Product {
     Product() {
     }
 
-    Product(Builder builder) {
-        this.productId = builder.productId;
-        this.productName = builder.productName;
-        this.productSellingPrice = builder.productSellingPrice;
-        this.productBuyingPrice=builder.productBuyingPrice;
-        this.createdDateTime = builder.createdDateTime;
-        this.createdUser = builder.createdUser;
-        this.lastModifiedDateTime = builder.lastModifiedDateTime;
-        this.lastModifiedUser = builder.lastModifiedUser;
+    public int getProductId() {
+        return productId;
     }
 
-    public int getProductId() {
-        return this.productId;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
     public String getProductName() {
-        return this.productName;
+        return productName;
     }
 
-    public Date getCreatedDateTime() {
-        return createdDateTime;
-    }
-
-    public String getCreatedUser() {
-        return createdUser;
-    }
-
-    public Date getLastModifiedDateTime() {
-        return lastModifiedDateTime;
-    }
-
-    public String getLastModifiedUser() {
-        return lastModifiedUser;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public double getProductBuyingPrice() {
         return productBuyingPrice;
     }
 
+    public void setProductBuyingPrice(double productBuyingPrice) {
+        this.productBuyingPrice = productBuyingPrice;
+    }
+
     public double getProductSellingPrice() {
         return productSellingPrice;
     }
 
-
-    public List<Stock> getStocks() {
-        return stocks;
+    public void setProductSellingPrice(double productSellingPrice) {
+        this.productSellingPrice = productSellingPrice;
     }
 
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public String getCreatedUser() {
+        return createdUser;
+    }
+
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+
+    public Date getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public String getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+
+    //    public List<Stock> getStocks() {
+//        return stocks;
+//    }
+//
     public void setCategory(Category category) {
         this.category = category;
     }
@@ -108,66 +138,10 @@ public class Product {
     public Category getCategory() {
         return category;
     }
-
-    public void addCategory(Category category){
-        setCategory(category);
-    }
-
-    public static class Builder {
-
-        private int productId;
-        private String productName;
-        private double productBuyingPrice;
-        private double productSellingPrice;
-        private Date createdDateTime;
-        private String createdUser;
-        private Date lastModifiedDateTime;
-        private String lastModifiedUser;
-
-        public Builder productId(int productId) {
-            this.productId = productId;
-            return this;
-        }
-
-        public Builder productSellingPrice(double productSellingPrice) {
-            this.productSellingPrice = productSellingPrice;
-            return this;
-        }
-
-        public Builder productBuyingPrice(double productBuyingPrice) {
-            this.productBuyingPrice = productBuyingPrice;
-            return this;
-        }
-
-        public Builder productName(String productName) {
-            this.productName = productName;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime) {
-            this.createdDateTime = createdDateTime;
-            return this;
-        }
-
-        public Builder createdUser(String createdUser) {
-            this.createdUser = createdUser;
-            return this;
-        }
-
-        public Builder lastModifiedDateTime(Date lastModifiedDateTime) {
-            this.lastModifiedDateTime = lastModifiedDateTime;
-            return this;
-        }
-
-        public Builder lastModifiedUser(String lastModifiedUser) {
-            this.lastModifiedUser = lastModifiedUser;
-            return this;
-        }
-
-        public Product build() {
-            return new Product(this);
-        }
-    }
+//
+//    public void addCategory(Category category){
+//        setCategory(category);
+//    }
 
 
     @Override
@@ -181,8 +155,6 @@ public class Product {
                 ", createdUser='" + createdUser + '\'' +
                 ", lastModifiedDateTime=" + lastModifiedDateTime +
                 ", lastModifiedUser='" + lastModifiedUser + '\'' +
-                ", category=" + category +
-                ", stocks=" + stocks +
                 '}';
     }
 }

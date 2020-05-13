@@ -1,5 +1,7 @@
 package inventoryservice.service.user;
 
+import inventoryservice.domain.admin.Role;
+import inventoryservice.domain.user.User;
 import inventoryservice.domain.user.UserRole;
 import inventoryservice.domain.user.UserRoleId;
 import inventoryservice.repository.user.UserRoleRepository;

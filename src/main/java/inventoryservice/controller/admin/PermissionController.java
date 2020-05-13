@@ -2,30 +2,30 @@ package inventoryservice.controller.admin;
 
 import inventoryservice.domain.admin.Permission;
 import inventoryservice.domain.admin.ResponseObject;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/permission")
+//@RequestMapping("/permission")
 public class PermissionController {
 
 
     @Autowired
     private PermissionService service;
 
-    @PostMapping(value = "/create",consumes = "application/x-www-form-urlencoded")
+    @PostMapping(value = "/permissions",consumes = "application/json")
     @ResponseBody
     public ResponseEntity create(@RequestBody Permission permission) {
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Permission Created Successfully");
-        if (permission.getPermissionName()==null ){
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Created Successfully");
+        if (permission.getPermissionName()==null || permission.getCreatedUser()==null|| permission.getLastModifiedUser()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Please provide a nam!");
+            responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user!");
         }else {
             service.add(permission);
             responseObject.setResponse(permission);
@@ -35,20 +35,24 @@ public class PermissionController {
         return ResponseEntity.ok(responseObject);
     }
 
-    @PostMapping(value = "/update",consumes = "application/json")
+    @PutMapping(value = "/permissions/{id}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity update(@RequestBody Permission permission) {
-        Permission permission1 = service.get(permission.getPermissionId());
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Permission Updated Successfully");
+    public ResponseEntity update(@RequestBody Permission permission, @PathVariable int id) {
+        Permission permission1 = service.get(id);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Updated Successfully");
 
         if(permission1==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this permission does not exist!");
         }else
-        if (permission.getPermissionName()==null ){
+        if (permission.getPermissionName()==null || permission.getLastModifiedUser()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a name!");
         }else {
+            permission.setPermissionId(permission1.getPermissionId());
+            permission.setCreatedUser(permission1.getCreatedUser());
+            permission.setCreatedDateTime(permission1.getCreatedDateTime());
+            permission.setLastModifiedDateTime(new Date());
             service.add(permission);
             responseObject.setResponse(permission);
         }
@@ -58,11 +62,11 @@ public class PermissionController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/permissions/{id}")
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
         Permission permission= service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Permission Deleted Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Deleted Successfully");
         if (permission==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this permission does not exist!");
@@ -73,11 +77,11 @@ public class PermissionController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/permissions/{id}")
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Permission permission= service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Permission Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Found Successfully");
         if (permission==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this permission does not exist!");
@@ -89,11 +93,11 @@ public class PermissionController {
     }
 
 
-    @GetMapping("/get/all")
+    @GetMapping("/permissions")
     @ResponseBody
     public ResponseEntity getAll() {
         List<Permission> permissions = service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"All Permissiona Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All Permissiona Found Successfully");
         if (permissions==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, permissions not found!");

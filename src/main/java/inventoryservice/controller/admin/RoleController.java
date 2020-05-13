@@ -2,28 +2,27 @@ package inventoryservice.controller.admin;
 
 import inventoryservice.domain.admin.ResponseObject;
 import inventoryservice.domain.admin.Role;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/role")
+//@RequestMapping("/role")
 public class RoleController {
 
     @Autowired
     private RoleService service;
 
-    @PostMapping(value = "/create",consumes = "application/json")
+    @PostMapping(value = "/roles",consumes = "application/json")
     @ResponseBody
     public ResponseEntity create(@RequestBody Role role) {
 
-
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Role Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Created Successfuly");
         if (role.getRoleName()==null || role.getCreatedUser()==null || role.getLastModifiedUser()==null){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user!");
@@ -36,19 +35,23 @@ public class RoleController {
         return ResponseEntity.ok(responseObject);
     }
 
-    @PostMapping(value = "/update",consumes = "application/json")
+    @PutMapping(value = "/roles/{id}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity update(@RequestBody Role role) {
-        Role role1 = service.get(role.getRoleId());
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Role Updated Successfully");
+    public ResponseEntity update(@RequestBody Role role, @PathVariable int id) {
+        Role role1 = service.get(id);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Updated Successfully");
 
         if(role1==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this role does not exist!");
-        }else if (role.getRoleName()==null || role.getCreatedUser()==null || role.getLastModifiedUser()==null){
+        }else if (role.getRoleName()==null  || role.getLastModifiedUser()==null){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user!");
         }else {
+            role.setRoleId(role1.getRoleId());
+            role.setCreatedUser(role1.getCreatedUser());
+            role.setLastModifiedDateTime(new Date());
+            role.setCreatedDateTime(role1.getCreatedDateTime());
             service.add(role);
             responseObject.setResponse(role);
         }
@@ -58,11 +61,11 @@ public class RoleController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/roles/{id}")
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
-                Role role = service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Role Deleted Successfully");
+        Role role = service.get(id);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Deleted Successfully");
         if (role==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this role does not exist!");
@@ -73,11 +76,11 @@ public class RoleController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/roles/{id}")
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Role role = service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Role Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Found Successfully");
         if (role==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this role does not exist!");
@@ -89,11 +92,11 @@ public class RoleController {
     }
 
 
-    @GetMapping("/get/all")
+    @GetMapping("/roles")
     @ResponseBody
     public ResponseEntity getAll() {
         List<Role> roles= service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Roles Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Roles Found Successfully");
         if (roles==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, roles not found!");

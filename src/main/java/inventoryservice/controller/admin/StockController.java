@@ -2,7 +2,6 @@ package inventoryservice.controller.admin;
 
 import inventoryservice.domain.admin.ResponseObject;
 import inventoryservice.domain.admin.Stock;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class StockController {
 
         String stockQuantity=Double.toString(stock.getStockQuantity());
 
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Stock Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Stock Created Successfully");
         if (stockQuantity==null ||stock.getCreatedUser()==null ||stock.getLastModifiedUser()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a stock quantity and/or created user and/or last modified user ");
@@ -41,7 +40,7 @@ public class StockController {
     @ResponseBody
     public ResponseEntity update(@RequestBody Stock stock) {
         Stock stock1 = service.get(stock.getStockId());
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Stock Updated Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Stock Updated Successfully");
         String stockQuantity=Double.toString(stock.getStockQuantity());
 
         if(stock1==null){
@@ -65,7 +64,7 @@ public class StockController {
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
         Stock stock= service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Stock Deleted Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Stock Deleted Successfully");
         if (stock==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this stock does not exist!");
@@ -80,7 +79,7 @@ public class StockController {
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Stock stock= service.get(id);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Stock Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Stock Found Successfully");
         if (stock==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this stock does not exist!");
@@ -96,7 +95,7 @@ public class StockController {
     @ResponseBody
     public ResponseEntity getAll() {
         List<Stock> stocks= service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Stock Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Stock Found Successfully");
         if (stocks==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, stocks not found!");

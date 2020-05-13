@@ -3,12 +3,17 @@ package inventoryservice.domain.user;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="user_seq")
+    @SequenceGenerator(
+            name="user_seq",
+            sequenceName="user_sequence",
+            allocationSize=1)
     private int userId;
 
     private String userEmail;
@@ -27,55 +32,104 @@ public class User {
 
     private String lastModifiedUser;
 
+    //bi-directional many-to-one association to UserRole
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    private List<UserRole> userRoles;
+
     User() {
     }
 
-    User(Builder builder) {
-        this.userId = builder.userId;
-        this.userFirstName = builder.userFirstName;
-        this.userLastName = builder.userLastName;
-        this.userEmail = builder.userEmail;
-        this.userAddress = builder.userAddress;
-        this.createdDateTime = builder.createdDateTime;
-        this.createdUser = builder.createdUser;
-        this.lastModifiedDateTime = builder.lastModifiedDateTime;
-        this.lastModifiedUser = builder.lastModifiedUser;
+    public int getUserId() {
+        return userId;
     }
 
-    public int getUserId() {
-        return this.userId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUserEmail() {
-        return this.userEmail;
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public String getUserFirstName() {
-        return this.userFirstName;
+        return userFirstName;
+    }
+
+    public void setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
     }
 
     public String getUserLastName() {
-        return this.userLastName;
+        return userLastName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
     }
 
     public String getUserAddress() {
-        return this.userAddress;
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
     }
 
     public Date getCreatedDateTime() {
         return createdDateTime;
     }
 
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
     public String getCreatedUser() {
         return createdUser;
+    }
+
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
     }
 
     public Date getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
 
+    public void setLastModifiedDateTime(Date lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
     public String getLastModifiedUser() {
         return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(String lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public UserRole addUserRole(UserRole userRole) {
+        getUserRoles().add(userRole);
+        userRole.setUser(this);
+
+        return userRole;
+    }
+
+    public UserRole removeUserRole(UserRole userRole) {
+        getUserRoles().remove(userRole);
+        userRole.setUser(null);
+        return userRole;
     }
 
     @PreUpdate
@@ -91,73 +145,6 @@ public class User {
         createdDateTime=now;
     }
 
-    public static class Builder {
-
-        private int userId;
-        private String userEmail;
-        private String userFirstName;
-        private String userLastName;
-        private String userAddress;
-
-
-        private Date createdDateTime;
-
-        private String createdUser;
-
-
-        private Date lastModifiedDateTime;
-
-        private String lastModifiedUser;
-
-        public Builder userId(int userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder userEmail(String userEmail) {
-            this.userEmail = userEmail;
-            return this;
-        }
-
-        public Builder userFirstName(String userFirstName) {
-            this.userFirstName = userFirstName;
-            return this;
-        }
-
-        public Builder userLastName(String userLastName) {
-            this.userLastName = userLastName;
-            return this;
-        }
-
-        public Builder userAddress(String userAddress) {
-            this.userAddress = userAddress;
-            return this;
-        }
-
-        public Builder createdDateTime(Date createdDateTime) {
-            this.createdDateTime = createdDateTime;
-            return this;
-        }
-
-        public Builder createdUser(String createdUser) {
-            this.createdUser = createdUser;
-            return this;
-        }
-
-        public Builder lastModifiedDateTime(Date lastModifiedDateTime) {
-            this.lastModifiedDateTime = lastModifiedDateTime;
-            return this;
-        }
-
-        public Builder lastModifiedUser(String lastModifiedUser) {
-            this.lastModifiedUser = lastModifiedUser;
-            return this;
-        }
-
-        public User build() {
-            return new User(this);
-        }
-    }
 
     @Override
     public String toString() {

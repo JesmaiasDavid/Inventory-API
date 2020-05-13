@@ -4,7 +4,6 @@ import inventoryservice.domain.admin.Permission;
 import inventoryservice.domain.admin.ResponseObject;
 import inventoryservice.domain.admin.Role;
 import inventoryservice.domain.admin.RolePermission;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.PermissionService;
 import inventoryservice.service.admin.RolePermissionService;
 import inventoryservice.service.admin.RoleService;
@@ -35,7 +34,7 @@ public class RolePermissionController {
         Role role = roleService.get(rolePermission.getRoleId());
         Permission permission = permissionService.get(rolePermission.getPermissionId());
 
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"RolePermission Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"RolePermission Created Successfully");
         if(role==null ){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, role not found!");
@@ -57,7 +56,7 @@ public class RolePermissionController {
     @ResponseBody
     public ResponseEntity getRoleByPermissionId(@PathVariable int permissionId) {
         Permission permission=permissionService.get(permissionId);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Role Ids Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Ids Found Successfully");
         if (permission==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, permission not found!");
@@ -73,7 +72,7 @@ public class RolePermissionController {
     @ResponseBody
     public ResponseEntity getPermissionByRoleId(@PathVariable int roleId) {
         Role role=roleService.get(roleId);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Permission Ids Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Ids Found Successfully");
         if (role==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, role not found!");
@@ -89,7 +88,7 @@ public class RolePermissionController {
     @ResponseBody
     public ResponseEntity getAll() {
         List<RolePermission> rolePermissions = service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"All rolepermissions Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All rolepermissions Found Successfully");
         if (rolePermissions==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, rolepermissions not found!");

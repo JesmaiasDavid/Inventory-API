@@ -4,7 +4,6 @@ import inventoryservice.domain.admin.Invoice;
 import inventoryservice.domain.admin.InvoiceProduct;
 import inventoryservice.domain.admin.Product;
 import inventoryservice.domain.admin.ResponseObject;
-import inventoryservice.factory.admin.ResponseObjectFactory;
 import inventoryservice.service.admin.InvoiceProductService;
 import inventoryservice.service.admin.InvoiceService;
 import inventoryservice.service.admin.ProductService;
@@ -35,7 +34,7 @@ public class InvoiceProductController {
         Product product = productService.get(invoiceProduct.getProductId());
         String quantity = Double.toString(invoiceProduct.getProductQuantity());
 
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"InvoiceProduct Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"InvoiceProduct Created Successfully");
         if(invoice==null ){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, invoice  does not exist!");
@@ -61,7 +60,7 @@ public class InvoiceProductController {
     @ResponseBody
     public ResponseEntity getInvoiceByProductId(@PathVariable int productId) {
         Product product=productService.get(productId);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Ids Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Ids Found Successfully");
         if (product==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this product id does not exist!");
@@ -77,7 +76,7 @@ public class InvoiceProductController {
     @ResponseBody
     public ResponseEntity getProductByInvoiceId(@PathVariable int invoiceId) {
         Invoice invoice=invoiceService.get(invoiceId);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Product Ids Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Ids Found Successfully");
         if (invoice==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this invoice id does not exist!");
@@ -93,7 +92,7 @@ public class InvoiceProductController {
     @ResponseBody
     public ResponseEntity getQuantityByInvoice(@PathVariable int invoiceId) {
         Invoice invoice=invoiceService.get(invoiceId);
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"Invoice Product Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Product Found Successfully");
         if (invoice==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this invoice id does not exist!");
@@ -109,7 +108,7 @@ public class InvoiceProductController {
     @ResponseBody
     public ResponseEntity getAll() {
         List<InvoiceProduct> invoiceProducts = service.getAll();
-        ResponseObject responseObject= ResponseObjectFactory.getResponseObject(HttpStatus.OK.toString(),"All invoiceProducts Found Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All invoiceProducts Found Successfully");
         if (invoiceProducts==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, invoices not found!");

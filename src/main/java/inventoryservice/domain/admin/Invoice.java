@@ -13,7 +13,11 @@ import java.util.List;
 public class Invoice {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="invoice_seq")
+    @SequenceGenerator(
+            name="invoice_seq",
+            sequenceName="invoice_sequence",
+            allocationSize=1)
     private int invoiceId;
 
     private double total;
@@ -26,68 +30,42 @@ public class Invoice {
 
     public Invoice(){}
 
-    public Invoice(Builder builder)
-    {
-        this.invoiceId=builder.invoiceId;
-        this.total=builder.total;
-      this.dateTimeGenerated=builder.dateTimeGenerated;
-      this.status=builder.status;
+    @PrePersist
+    public void prePersist() {
+        Date now = new Date();
+        dateTimeGenerated=now;
     }
 
-    public int getInvoiceId(){
-        return this.invoiceId;
+    public int getInvoiceId() {
+        return invoiceId;
     }
 
-    public Date getDateTimeGenerated() {
-        return dateTimeGenerated;
+    public void setInvoiceId(int invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
-    public double getTotal(){
-        return this.total;
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 
     public String getStatus() {
         return status;
     }
 
-    @PrePersist
-    public void prePersist() {
-        Date now = new Date();
-        dateTimeGenerated = now;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public static class Builder{
+    public Date getDateTimeGenerated() {
+        return dateTimeGenerated;
+    }
 
-        private int invoiceId;
-
-        private String status;
-        private double total;
-
-        private Date dateTimeGenerated;
-
-        public Builder invoiceId(int invoiceId){
-            this.invoiceId=invoiceId;
-            return this;
-        }
-
-        public Builder status(String status){
-            this.status=status;
-            return  this;
-        }
-
-        public Builder total(double total){
-            this.total=total;
-            return this;
-        }
-
-        public Builder dateTimeGenerated(Date dateTimeGenerated){
-            this.dateTimeGenerated=dateTimeGenerated;
-            return this;
-        }
-
-        public Invoice build(){
-            return new Invoice(this);
-        }
+    public void setDateTimeGenerated(Date dateTimeGenerated) {
+        this.dateTimeGenerated = dateTimeGenerated;
     }
 
     @Override

@@ -1,48 +1,64 @@
 package inventoryservice.domain.user;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import inventoryservice.domain.admin.Role;
+
+import javax.persistence.*;
 
 @Entity
-@IdClass(UserRoleId.class)
 public class UserRole {
 
-    @Id
-    private int userId;
+   @EmbeddedId
+   UserRoleId id;
 
-    @Id
-    private int roleId;
+    //bi-directional many-to-one association to User
 
-    public UserRole(int userId, int roleId) {
-        this.userId = userId;
-        this.roleId = roleId;
+    @ManyToOne
+    @MapsId("user_id")
+    @JoinColumn(name="user_id")
+    private User user;
+
+    //bi-directional many-to-one association to Role
+    @ManyToOne
+    @MapsId("role_id")
+    @JoinColumn(name="role_id")
+    private Role role;
+public UserRole(){}
+    public UserRole(User user, Role role) {
+        this.user = user;
+        this.role = role;
     }
 
-    public UserRole() {
+
+    public UserRoleId getId() {
+        return id;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setId(UserRoleId id) {
+        this.id = id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public User getUser() {
+        return user;
     }
 
-    public int getRoleId() {
-        return roleId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
     public String toString() {
         return "UserRole{" +
-                "userId=" + userId +
-                ", roleId=" + roleId +
+                "id=" + id +
+                ", user=" + user +
+                ", role=" + role +
                 '}';
     }
 }
