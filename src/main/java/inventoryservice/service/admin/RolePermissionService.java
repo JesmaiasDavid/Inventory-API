@@ -1,5 +1,7 @@
 package inventoryservice.service.admin;
 
+import inventoryservice.domain.admin.Permission;
+import inventoryservice.domain.admin.Role;
 import inventoryservice.domain.admin.RolePermission;
 import inventoryservice.domain.admin.RolePermissonId;
 import inventoryservice.repository.admin.RolePermissionRepository;
@@ -56,11 +58,11 @@ public class RolePermissionService implements IService<RolePermission, RolePermi
     }
 
 
-    public List<Integer> getRoleByPermissionId(int permissionId){
-        return  repository.findRoleIdByPermissionId(permissionId);
+    public List<Role> getRolePermission(Permission permission){
+        return  repository.findRoleIdByPermissionId(permission);
     }
 
-    public List<Integer> getPermissionIdbyRoleId(int roleId){
-        return repository.findPermissionIdByRoleId(roleId);
+    public List<Permission> getPermissionbyRole(Role role){
+        return repository.findPermissionIdByRoleId(role);
     }
 }

@@ -1,9 +1,6 @@
 package inventoryservice.controller.admin;
 
-import inventoryservice.domain.admin.Permission;
-import inventoryservice.domain.admin.ResponseObject;
-import inventoryservice.domain.admin.Role;
-import inventoryservice.domain.admin.RolePermission;
+import inventoryservice.domain.admin.*;
 import inventoryservice.service.admin.PermissionService;
 import inventoryservice.service.admin.RolePermissionService;
 import inventoryservice.service.admin.RoleService;
@@ -12,10 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rolepermission")
+//@RequestMapping("/rolepermission")
 public class RolePermissionController {
 
     @Autowired
@@ -27,12 +25,12 @@ public class RolePermissionController {
     @Autowired
     private RolePermissionService service;
 
-    @PostMapping(value = "/create",consumes = "application/json")
+    @PostMapping(value = "/roles/{roleId}/permissions/{permissionId}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity create(@RequestBody RolePermission rolePermission) {
+    public ResponseEntity create(@PathVariable int roleId,@PathVariable int permissionId) {
 
-        Role role = roleService.get(rolePermission.getRoleId());
-        Permission permission = permissionService.get(rolePermission.getPermissionId());
+        Role role = roleService.get(roleId);
+        Permission permission = permissionService.get(permissionId);
 
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"RolePermission Created Successfully");
         if(role==null ){
@@ -43,18 +41,24 @@ public class RolePermissionController {
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, permission not found!");
         }else {
+
+            RolePermission rolePermission = new RolePermission(role,permission);
+
+            rolePermission.setId(new RolePermissonId(role.getRoleId(),permission.getPermissionId()));
+            role.addRolePermission(rolePermission);
+            permission.addRolePermission(rolePermission);
             service.add(rolePermission);
             responseObject.setResponse(rolePermission);
         }
 
-        System.out.println(rolePermission.toString());
         return ResponseEntity.ok(responseObject);
     }
 
 
-    @GetMapping("/getRoleByPermissionId/{permissionId}")
+    @GetMapping("/permissions/{permissionId}/roles")
     @ResponseBody
     public ResponseEntity getRoleByPermissionId(@PathVariable int permissionId) {
+        List<Integer> listId = new ArrayList<>();
         Permission permission=permissionService.get(permissionId);
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Role Ids Found Successfully");
         if (permission==null){
@@ -62,15 +66,20 @@ public class RolePermissionController {
             responseObject.setResponseDescription("Sorry, permission not found!");
         }else{
 
-            List<Integer> list=service.getRoleByPermissionId(permissionId);
-            responseObject.setResponse(list);
+            List<Role> list=service.getRolePermission(permission);
+
+            for (int i=0;i<list.size();i++){
+                listId.add(list.get(i).getRoleId());
+            }
+            responseObject.setResponse(listId);
         }
         return ResponseEntity.ok(responseObject);
     }
 
-    @GetMapping("/getPermissionByRoleId/{roleId}")
+    @GetMapping("/roles/{roleId}/permissions")
     @ResponseBody
     public ResponseEntity getPermissionByRoleId(@PathVariable int roleId) {
+        List<Integer> listId = new ArrayList<>();
         Role role=roleService.get(roleId);
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Ids Found Successfully");
         if (role==null){
@@ -78,15 +87,33 @@ public class RolePermissionController {
             responseObject.setResponseDescription("Sorry, role not found!");
         }else{
 
-            List<Integer> list=service.getPermissionIdbyRoleId(roleId);
-            responseObject.setResponse(list);
+            List<Permission> list=service.getPermissionbyRole(role);
+            for (int i=0;i<list.size();i++){
+                listId.add(list.get(i).getPermissionId());
+            }
+            responseObject.setResponse(listId);
         }
         return ResponseEntity.ok(responseObject);
     }
 
-    @GetMapping("/get/all")
+    @GetMapping("/roles/permissions")
     @ResponseBody
     public ResponseEntity getAll() {
+        List<RolePermission> rolePermissions = service.getAll();
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All rolepermissions Found Successfully");
+        if (rolePermissions==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, rolepermissions not found!");
+        }else{
+
+            responseObject.setResponse(rolePermissions);
+        }
+        return ResponseEntity.ok(responseObject);
+    }
+
+    @GetMapping("/permissions/roles")
+    @ResponseBody
+    public ResponseEntity getAlll() {
         List<RolePermission> rolePermissions = service.getAll();
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"All rolepermissions Found Successfully");
         if (rolePermissions==null){

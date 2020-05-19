@@ -1,6 +1,10 @@
 package inventoryservice.domain.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import inventoryservice.domain.admin.Role;
+import inventoryservice.domain.admin.RoleUser;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -32,11 +36,20 @@ public class User {
 
     private String lastModifiedUser;
 
-    //bi-directional many-to-one association to UserRole
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
-    private List<UserRole> userRoles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="role")
+    private List<RoleUser> roleUsers;
 
     User() {
+    }
+
+    public List<RoleUser> getRoleUsers() {
+        return roleUsers;
+    }
+
+    public void setRoleUsers(List<RoleUser> roleUsers) {
+        this.roleUsers = roleUsers;
     }
 
     public int getUserId() {
@@ -111,25 +124,17 @@ public class User {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public List<UserRole> getUserRoles() {
-        return userRoles;
+    public RoleUser addRoleUser(RoleUser roleUser) {
+        getRoleUsers().add(roleUser);
+        roleUser.setUser(this);
+
+        return roleUser;
     }
 
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
-    }
-
-    public UserRole addUserRole(UserRole userRole) {
-        getUserRoles().add(userRole);
-        userRole.setUser(this);
-
-        return userRole;
-    }
-
-    public UserRole removeUserRole(UserRole userRole) {
-        getUserRoles().remove(userRole);
-        userRole.setUser(null);
-        return userRole;
+    public RoleUser removeRoleUser(RoleUser roleUser) {
+        getRoleUsers().remove(roleUser);
+        roleUser.setUser(null);
+        return roleUser;
     }
 
     @PreUpdate

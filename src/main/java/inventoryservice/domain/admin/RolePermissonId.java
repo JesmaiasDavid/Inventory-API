@@ -1,8 +1,10 @@
 package inventoryservice.domain.admin;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class RolePermissonId implements Serializable {
 
     private int roleId;
@@ -13,6 +15,22 @@ public class RolePermissonId implements Serializable {
 
     public RolePermissonId(int roleId, int permissionId) {
         this.roleId = roleId;
+        this.permissionId = permissionId;
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public int getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(int permissionId) {
         this.permissionId = permissionId;
     }
 

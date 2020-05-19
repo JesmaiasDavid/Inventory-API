@@ -1,7 +1,9 @@
 package inventoryservice.service.admin;
 
+import inventoryservice.domain.admin.Invoice;
 import inventoryservice.domain.admin.InvoiceProduct;
 import inventoryservice.domain.admin.InvoiceProductId;
+import inventoryservice.domain.admin.Product;
 import inventoryservice.repository.admin.InvoiceProductRepository;
 import inventoryservice.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +55,15 @@ public class InvoiceProductService implements IService<InvoiceProduct, InvoicePr
         return repository.findAll();
     }
 
-    public List<Integer> getInvoicebyProductId(int productId){
-        return  repository.findInvoiceIdByProductId(productId);
+    public List<Invoice> getInvoicebyProductId(Product product){
+        return  repository.findInvoiceIdByProductId(product);
     }
 
-    public List<Integer> getProductbyInvoiceId(int invoiceId){
-        return repository.findProductIdByInvoiceId(invoiceId);
+    public List<Product> getProductbyInvoiceId(Invoice invoice){
+        return repository.findProductIdByInvoiceId(invoice);
     }
 
-    public List<Integer> getQuantityByInvoiceId(int invoiceId){
-        return repository.findQuantityIdByInvoiceId(invoiceId);
-    }
+//    public List<Integer> getQuantityByInvoiceId(int invoiceId){
+//        return repository.findQuantityIdByInvoiceId(invoiceId);
+//    }
 }

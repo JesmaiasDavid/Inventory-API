@@ -28,16 +28,17 @@ public class ProductController {
     public ResponseEntity create(@RequestBody Product product,@PathVariable int categoryId) {
         String buyingPrice=Double.toString(product.getProductBuyingPrice());
         String sellingPrice=Double.toString(product.getProductSellingPrice());
+        String productQuantity=Double.toString(product.getProductQuantity());
         Category category= categoryService.get(categoryId);
 
-        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Created Successfully");
+        ResponseObject responseObject= new ResponseObject(HttpStatus.CREATED.toString(),"Product Created Successfully");
         if (category==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this category does not exist!");
         }else
-        if (product.getProductName()==null || product.getCreatedUser()==null || product.getLastModifiedUser()==null || buyingPrice==null || sellingPrice==null){
-            responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user and/or buying price and/or selling price!");
+        if (product.getProductName()==null  || product.getLastModifiedUser()==null || buyingPrice==null || sellingPrice==null || productQuantity==null){
+            responseObject.setResponseCode(HttpStatus.BAD_REQUEST.toString());
+            responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user and/or buying price and/or selling price and/or product Quantity!");
         }else {
 
            category.addProduct(product);
@@ -49,21 +50,32 @@ public class ProductController {
         return ResponseEntity.ok(responseObject);
     }
 
-    @PutMapping(value = "/products/{id}",consumes = "application/json")
+    @PutMapping(value = "/categories/{categoryId}/products/{id}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity update(@RequestBody Product product,@PathVariable int id) {
+    public ResponseEntity update(@RequestBody Product product,@PathVariable int id,@PathVariable int categoryId) {
         Product product1 = service.get(id);
+        Category category= categoryService.get(categoryId);
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Updated Successfully");
         String buyingPrice=Double.toString(product.getProductBuyingPrice());
         String sellingPrice=Double.toString(product.getProductSellingPrice());
+        String productQuantity=Double.toString(product.getProductQuantity());
 
+        if (category==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this category does not exist!");
+        }else
         if(product1==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this product does not exist!");
         }else
-        if (product.getProductName()==null  || product.getLastModifiedUser()==null || buyingPrice==null || sellingPrice==null){
-            responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user and/or buying price and/or selling price!");
+            if (category.getId()!=product1.getCategory().getId()){
+                responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+                responseObject.setResponseDescription("Sorry, this product is not in this category!");
+            }
+        else
+        if (product.getProductName()==null  || product.getLastModifiedUser()==null || buyingPrice==null || sellingPrice==null || productQuantity==null){
+            responseObject.setResponseCode(HttpStatus.BAD_REQUEST.toString());
+            responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user and/or buying price and/or selling price and/or product Quantity!");
         }else {
             product.setProductId(product1.getProductId());
             product.setCreatedUser(product1.getCreatedUser());
@@ -79,32 +91,56 @@ public class ProductController {
     }
 
 
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("categories/{categoryId}/products/{id}")
     @ResponseBody
-    public ResponseEntity delete(@PathVariable int id) {
+    public ResponseEntity delete(@PathVariable int id,@PathVariable int categoryId) {
         Product product= service.get(id);
-        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Permission Deleted Successfully");
+        Category category= categoryService.get(categoryId);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Deleted Successfully");
+
+        if (category==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this category does not exist!");
+        }else
         if (product==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this product does not exist!");
-        }else{
-            Category category =product.getCategory();
-            category.removeProduct(product);
+        }else
+        if (category.getId()!=product.getCategory().getId()){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this product is not in this category!");
+        }
+
+        else{
+            Category category1 =product.getCategory();
+            category1.removeProduct(product);
             service.delete(id);
         }
         return ResponseEntity.ok(responseObject);
 
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("categories/{categoryId}/products/{id}")
     @ResponseBody
-    public ResponseEntity get(@PathVariable int id) {
+    public ResponseEntity get(@PathVariable int id,@PathVariable int categoryId) {
         Product product = service.get(id);
+        Category category= categoryService.get(categoryId);
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Found Successfully");
+
+        if (category==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this category does not exist!");
+        }else
         if (product==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this product does not exist!");
-        }else{
+        }else
+        if (category.getId()!=product.getCategory().getId()){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this product is not in this category!");
+        }
+
+        else{
 
             responseObject.setResponse(product);
         }
@@ -112,11 +148,17 @@ public class ProductController {
     }
 
 
-    @GetMapping("/products")
+    @GetMapping("categories/{categoryId}/products")
     @ResponseBody
-    public ResponseEntity getAll() {
-        List<Product> products= service.getAll();
+    public ResponseEntity getAll(@PathVariable int categoryId) {
+        Category category= categoryService.get(categoryId);
+        List<Product> products= category.getProducts();
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Found Successfully");
+
+        if (category==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, this category does not exist!");
+        }else
         if (products==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, products not found!");

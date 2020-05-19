@@ -1,5 +1,7 @@
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -28,9 +30,10 @@ public class Supplier {
 
     private String lastModifiedUser;
 
-    //bi-directional many-to-one association to Stock
-    @OneToMany(mappedBy="supplier")
-    private List<Stock> stocks;
+
+   @JsonIgnore
+    @OneToMany(mappedBy="supplier", orphanRemoval = true)
+    private List<ProductSupplier>  productSuppliers;
 
     Supplier() {
     }
@@ -89,6 +92,24 @@ public class Supplier {
 
     public void setLastModifiedUser(String lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public List<ProductSupplier> getProductSuppliers() {
+        return productSuppliers;
+    }
+
+    public void setProductSuppliers(List<ProductSupplier> productSuppliers) {
+        this.productSuppliers = productSuppliers;
+    }
+
+    public void addProductSupplier(ProductSupplier productSupplier) {
+        getProductSuppliers().add(productSupplier);
+        productSupplier.setSupplier(this);
+    }
+
+    public void removeProduct(ProductSupplier productSupplier) {
+        getProductSuppliers().remove(productSupplier);
+        productSupplier.setSupplier(null);
     }
 
     @PreUpdate

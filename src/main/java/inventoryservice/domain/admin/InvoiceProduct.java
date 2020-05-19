@@ -1,43 +1,62 @@
 package inventoryservice.domain.admin;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@IdClass(InvoiceProductId.class)
-public class InvoiceProduct {
+public class InvoiceProduct implements Serializable {
 
-    @Id
-    private int invoiceId;
+    @EmbeddedId
+    private InvoiceProductId id;
 
-    @Id
-    private  int productId;
+    @JsonIgnore
+    @MapsId("productId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="product_Id")
+    private Product product;
+
+    @JsonIgnore
+    @MapsId("invoiceId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="invoice_Id")
+    private Invoice invoice;
+
 
     private int productQuantity;
 
-    public InvoiceProduct(int invoiceId, int productId, int productQuantity) {
-        this.invoiceId = invoiceId;
-        this.productId = productId;
-        this.productQuantity=productQuantity;
+    public InvoiceProduct(Product product, Invoice invoice, int productQuantity) {
+        this.product = product;
+        this.invoice = invoice;
+        this.productQuantity = productQuantity;
     }
 
     public InvoiceProduct(){}
 
-    public int getInvoiceId() {
-        return invoiceId;
+
+    public InvoiceProductId getId() {
+        return id;
     }
 
-    public void setInvoiceId(int invoiceId) {
-        this.invoiceId = invoiceId;
+    public void setId(InvoiceProductId id) {
+        this.id = id;
     }
 
-    public int getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
     public int getProductQuantity() {
@@ -51,8 +70,9 @@ public class InvoiceProduct {
     @Override
     public String toString() {
         return "InvoiceProduct{" +
-                "invoiceId=" + invoiceId +
-                ", productId=" + productId +
+                "id=" + id +
+                ", product=" + product +
+                ", invoice=" + invoice +
                 ", productQuantity=" + productQuantity +
                 '}';
     }

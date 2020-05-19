@@ -1,48 +1,66 @@
 package inventoryservice.domain.admin;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@IdClass(RolePermissonId.class)
-public class RolePermission {
+public class RolePermission implements Serializable {
 
-    @Id
-    private int roleId;
+    @EmbeddedId
+    RolePermissonId id;
 
-    @Id
-    private int permissionId;
+    @JsonIgnore
+    @MapsId("roleId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="role_Id")
+    private Role role;
 
-    public RolePermission(int roleId, int permissionId) {
-        this.roleId = roleId;
-        this.permissionId = permissionId;
+    @JsonIgnore
+    @MapsId("permissionId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="permission_Id")
+    private Permission permission;
+
+    public  RolePermission(){}
+
+    public RolePermission(Role role, Permission permission) {
+        this.role = role;
+        this.permission = permission;
     }
 
-    public RolePermission() {
+    public RolePermissonId getId() {
+        return id;
     }
 
-    public int getRoleId() {
-        return roleId;
+    public void setId(RolePermissonId id) {
+        this.id = id;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public int getPermissionId() {
-        return permissionId;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public void setPermissionId(int permissionId) {
-        this.permissionId = permissionId;
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
     }
 
     @Override
     public String toString() {
         return "RolePermission{" +
-                "roleId=" + roleId +
-                ", permissionId=" + permissionId +
+                "id=" + id +
+                ", role=" + role +
+                ", permission=" + permission +
                 '}';
     }
 }

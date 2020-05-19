@@ -8,16 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/supplier")
+//@RequestMapping("/supplier")
 public class SupplierController {
 
     @Autowired
     private SupplierService service;
 
-    @PostMapping(value = "/create",consumes = "application/json")
+    @PostMapping(value = "/suppliers",consumes = "application/json")
     @ResponseBody
     public ResponseEntity create(@RequestBody Supplier supplier) {
 
@@ -34,20 +35,24 @@ public class SupplierController {
         return ResponseEntity.ok(responseObject);
     }
 
-    @PostMapping(value = "/update",consumes = "application/json")
+    @PutMapping(value = "/suppliers/{id}",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity update(@RequestBody Supplier supplier) {
-        Supplier supplier1 = service.get(supplier.getSupplierId());
+    public ResponseEntity update(@RequestBody Supplier supplier,@PathVariable int id) {
+        Supplier supplier1 = service.get(id);
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Supplier Updated Successfully");
 
         if(supplier1==null){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, this supplier does not exist!");
         }else
-        if (supplier.getSupplierName()==null ||supplier.getSupplierCompany()==null ||supplier.getLastModifiedUser()==null || supplier.getCreatedUser()==null){
+        if (supplier.getSupplierName()==null ||supplier.getSupplierCompany()==null ||supplier.getLastModifiedUser()==null ){
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a supplier name and/or company name and/or created user and/or last modified user ");
         }else {
+            supplier.setSupplierId(supplier1.getSupplierId());
+            supplier.setCreatedUser(supplier1.getCreatedUser());
+            supplier.setCreatedDateTime(supplier1.getCreatedDateTime());
+            supplier.setLastModifiedDateTime(new Date());
             service.add(supplier);
             responseObject.setResponse(supplier);
         }
@@ -57,7 +62,7 @@ public class SupplierController {
     }
 
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/suppliers/{id}")
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
        Supplier supplier=service.get(id);
@@ -72,7 +77,7 @@ public class SupplierController {
 
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/suppliers/{id}")
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Supplier supplier=service.get(id);
@@ -88,7 +93,7 @@ public class SupplierController {
     }
 
 
-    @GetMapping("/get/all")
+    @GetMapping("/suppliers")
     @ResponseBody
     public ResponseEntity getAll() {
         List<Supplier> suppliers= service.getAll();

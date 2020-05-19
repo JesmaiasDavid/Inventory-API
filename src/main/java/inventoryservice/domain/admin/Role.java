@@ -1,6 +1,6 @@
 package inventoryservice.domain.admin;
 
-import inventoryservice.domain.user.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -29,11 +29,31 @@ public class Role {
 
     private String lastModifiedUser;
 
+    @JsonIgnore
+    @OneToMany(mappedBy="role")
+    private List<RoleUser> roleUsers;
 
-    @OneToMany(mappedBy="role", cascade = CascadeType.ALL)
-    private List<UserRole> userRoles;
+    @JsonIgnore
+    @OneToMany(mappedBy="role")
+    private List<RolePermission> rolePermissions;
 
     Role() {
+    }
+
+    public List<RolePermission> getRolePermissions() {
+        return rolePermissions;
+    }
+
+    public void setRolePermissions(List<RolePermission> rolePermissions) {
+        this.rolePermissions = rolePermissions;
+    }
+
+    public List<RoleUser> getRoleUsers() {
+        return roleUsers;
+    }
+
+    public void setRoleUsers(List<RoleUser> roleUsers) {
+        this.roleUsers = roleUsers;
     }
 
     public int getRoleId() {
@@ -84,25 +104,33 @@ public class Role {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public List<UserRole> getUserRoles() {
-        return userRoles;
+
+
+    public RoleUser addRoleUser(RoleUser roleUser) {
+        getRoleUsers().add(roleUser);
+        roleUser.setRole(this);
+
+        return roleUser;
     }
 
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
+    public RoleUser removeRoleUser(RoleUser roleUser) {
+        getRoleUsers().remove(roleUser);
+        roleUser.setRole(null);
+        return roleUser;
     }
 
-    public UserRole addUserRole(UserRole userRole) {
-        getUserRoles().add(userRole);
-        userRole.setRole(this);
+    public RolePermission addRolePermission(RolePermission rolePermission) {
+        getRolePermissions().add(rolePermission);
+        rolePermission.setRole(this);
 
-        return userRole;
+        return rolePermission;
     }
 
-    public UserRole removeUserRole(UserRole userRole) {
-        getUserRoles().remove(userRole);
-        userRole.setRole(null);
-        return userRole;
+    public RolePermission removeRolePermission(RolePermission rolePermission) {
+        getRolePermissions().remove(rolePermission);
+        rolePermission.setRole(null);
+
+        return rolePermission;
     }
 
     @PreUpdate

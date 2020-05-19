@@ -147,20 +147,20 @@ public class CategoryController {
 //        return objectMapper.treeToValue(patched, Category.class);
 //    }
 
-    @GetMapping("/{id}/products")
-    @ResponseBody
-    public ResponseEntity getCategoryproducts(@PathVariable int id) {
-        Category category = service.get(id);
-        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category Found Successfully");
-        if (category==null){
-            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-            responseObject.setResponseDescription("Sorry, this category does not exist!");
-        }else{
-
-            responseObject.setResponse(category.getProducts());
-        }
-        return ResponseEntity.ok(responseObject);
-    }
+//    @GetMapping("/{id}/products")
+//    @ResponseBody
+//    public ResponseEntity getCategoryproducts(@PathVariable int id) {
+//        Category category = service.get(id);
+//        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category Found Successfully");
+//        if (category==null){
+//            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+//            responseObject.setResponseDescription("Sorry, this category does not exist!");
+//        }else{
+//
+//            responseObject.setResponse(category.getProducts());
+//        }
+//        return ResponseEntity.ok(responseObject);
+//    }
 
 
 

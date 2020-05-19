@@ -36,9 +36,6 @@ public class Stock {
     @JoinColumn(name="categoryId")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name="supplierId")
-    private Supplier supplier;
 
 
     Stock(){}

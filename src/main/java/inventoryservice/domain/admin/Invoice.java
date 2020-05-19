@@ -5,6 +5,8 @@
 */
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +29,9 @@ public class Invoice {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTimeGenerated;
 
+    @JsonIgnore
+    @OneToMany(mappedBy="invoice")
+    private List<InvoiceProduct> invoiceProducts;
 
     public Invoice(){}
 
@@ -34,6 +39,14 @@ public class Invoice {
     public void prePersist() {
         Date now = new Date();
         dateTimeGenerated=now;
+    }
+
+    public List<InvoiceProduct> getInvoiceProducts() {
+        return invoiceProducts;
+    }
+
+    public void setInvoiceProducts(List<InvoiceProduct> invoiceProducts) {
+        this.invoiceProducts = invoiceProducts;
     }
 
     public int getInvoiceId() {
@@ -66,6 +79,20 @@ public class Invoice {
 
     public void setDateTimeGenerated(Date dateTimeGenerated) {
         this.dateTimeGenerated = dateTimeGenerated;
+    }
+
+    public InvoiceProduct addInvoiceProduct(InvoiceProduct invoiceProduct) {
+        getInvoiceProducts().add(invoiceProduct);
+        invoiceProduct.setInvoice(this);
+
+        return invoiceProduct;
+    }
+
+    public InvoiceProduct removeRolePermission(InvoiceProduct invoiceProduct) {
+        getInvoiceProducts().remove(invoiceProduct);
+        invoiceProduct.setInvoice(null);
+
+        return invoiceProduct;
     }
 
     @Override

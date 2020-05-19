@@ -1,5 +1,6 @@
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -28,6 +29,8 @@ public class Product {
 
     private double productSellingPrice;
 
+    private  double productQuantity;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDateTime;
 
@@ -43,8 +46,17 @@ public class Product {
     @JoinColumn(name="categoryId")
     private Category category;
 
+    @JsonIgnore
+    @OneToMany(mappedBy="product")
+    private List<InvoiceProduct> invoiceProducts;
+
     @OneToMany(mappedBy="product")
     private List<Stock> stocks;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy="product")
+    private List<ProductSupplier>  productSuppliers;
 
     @PreUpdate
     public void preUpdate() {
@@ -60,6 +72,14 @@ public class Product {
     }
 
     Product() {
+    }
+
+    public List<InvoiceProduct> getInvoiceProducts() {
+        return invoiceProducts;
+    }
+
+    public void setInvoiceProducts(List<InvoiceProduct> invoiceProducts) {
+        this.invoiceProducts = invoiceProducts;
     }
 
     public int getProductId() {
@@ -126,11 +146,14 @@ public class Product {
         this.lastModifiedUser = lastModifiedUser;
     }
 
+    public double getProductQuantity() {
+        return productQuantity;
+    }
 
-    //    public List<Stock> getStocks() {
-//        return stocks;
-//    }
-//
+    public void setProductQuantity(double productQuantity) {
+        this.productQuantity = productQuantity;
+    }
+
     public void setCategory(Category category) {
         this.category = category;
     }
@@ -138,11 +161,38 @@ public class Product {
     public Category getCategory() {
         return category;
     }
-//
-//    public void addCategory(Category category){
-//        setCategory(category);
-//    }
 
+    public List<ProductSupplier> getProductSuppliers() {
+        return productSuppliers;
+    }
+
+    public void setProductSuppliers(List<ProductSupplier> productSuppliers) {
+        this.productSuppliers = productSuppliers;
+    }
+
+    public void addProductSupplier(ProductSupplier productSupplier) {
+        getProductSuppliers().add(productSupplier);
+        productSupplier.setProduct(this);
+    }
+
+    public void removeProduct(ProductSupplier productSupplier) {
+        getProductSuppliers().remove(productSupplier);
+        productSupplier.setProduct(null);
+    }
+
+    public InvoiceProduct addInvoiceProduct(InvoiceProduct invoiceProduct) {
+        getInvoiceProducts().add(invoiceProduct);
+        invoiceProduct.setProduct(this);
+
+        return invoiceProduct;
+    }
+
+    public InvoiceProduct removeRolePermission(InvoiceProduct invoiceProduct) {
+        getInvoiceProducts().remove(invoiceProduct);
+        invoiceProduct.setProduct(null);
+
+        return invoiceProduct;
+    }
 
     @Override
     public String toString() {
@@ -151,10 +201,12 @@ public class Product {
                 ", productName='" + productName + '\'' +
                 ", productBuyingPrice=" + productBuyingPrice +
                 ", productSellingPrice=" + productSellingPrice +
+                ", productQuantity=" + productQuantity +
                 ", createdDateTime=" + createdDateTime +
                 ", createdUser='" + createdUser + '\'' +
                 ", lastModifiedDateTime=" + lastModifiedDateTime +
                 ", lastModifiedUser='" + lastModifiedUser + '\'' +
+                ", category=" + category +
                 '}';
     }
 }

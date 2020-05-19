@@ -1,9 +1,14 @@
 package inventoryservice.domain.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Permission {
 
     @Id
@@ -26,7 +31,19 @@ public class Permission {
 
     private String lastModifiedUser;
 
+    @JsonIgnore
+    @OneToMany(mappedBy="permission")
+    private List<RolePermission> rolePermissions;
+
     Permission(){}
+
+    public List<RolePermission> getRolePermissions() {
+        return rolePermissions;
+    }
+
+    public void setRolePermissions(List<RolePermission> rolePermissions) {
+        this.rolePermissions = rolePermissions;
+    }
 
     public int getPermissionId() {
         return permissionId;
@@ -76,6 +93,19 @@ public class Permission {
         this.lastModifiedUser = lastModifiedUser;
     }
 
+    public RolePermission addRolePermission(RolePermission rolePermission) {
+        getRolePermissions().add(rolePermission);
+        rolePermission.setPermission(this);
+
+        return rolePermission;
+    }
+
+    public RolePermission removeRolePermission(RolePermission rolePermission) {
+        getRolePermissions().remove(rolePermission);
+        rolePermission.setPermission(null);
+
+        return rolePermission;
+    }
     @PreUpdate
     public void preUpdate() {
         lastModifiedDateTime = new Date();
