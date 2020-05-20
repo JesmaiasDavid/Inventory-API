@@ -4,7 +4,7 @@
 
 #### 1. Create a MySQL Database
 
-#### 2.Go to application.properties and substitute __serviceinventory__ for your database name 
+#### 2.Go to application.properties and substitute "serviceinventory" for your database name 
 
 #### 3.You can find 4 packages namely: 
 ####     **Domain** - contains the models(entities)
