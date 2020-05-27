@@ -19,3 +19,18 @@
 #### 6. Get and Delete Methods require an Identfier to be retrieve and delete.
 
 #### 7. POST for RoleUser and RolePermission send an empty Payload.
+
+
+### POST InvoiceProduct -> invoices/{invoiceId}/products and POST ProductSupplier->suppliers/{supplierId}/products
+###Example:
+
+### [
+###      {
+###       productId:1,
+###       quantity:100
+###       },
+###       {
+###       productId:2,
+###       quantity:200
+###       }
+### ]
