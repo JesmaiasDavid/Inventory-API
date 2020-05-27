@@ -21,16 +21,16 @@
 #### 7. POST for RoleUser and RolePermission send an empty Payload.
 
 
-### POST InvoiceProduct -> invoices/{invoiceId}/products and POST ProductSupplier->suppliers/{supplierId}/products
-###Example:
+#### POST InvoiceProduct -> invoices/{invoiceId}/products and POST ProductSupplier->suppliers/{supplierId}/products
+#### Example:
 
-### [
-###      {
-###       productId:1,
-###       quantity:100
-###       },
-###       {
-###       productId:2,
-###       quantity:200
-###       }
-### ]
+##### [
+#####      {
+#####       productId:1,
+#####       quantity:100
+#####       },
+#####       {
+#####       productId:2,
+#####       quantity:200
+#####       }
+##### ]
