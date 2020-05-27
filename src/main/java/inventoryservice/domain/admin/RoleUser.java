@@ -1,14 +1,16 @@
 package inventoryservice.domain.admin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import inventoryservice.domain.user.User;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-public class RolePermission implements Serializable {
+public class RoleUser implements Serializable {
 
     @EmbeddedId
-    RolePermissonId id;
+    private RoleUserId id;
 
     @JsonIgnore
     @MapsId("roleId")
@@ -17,23 +19,23 @@ public class RolePermission implements Serializable {
     private Role role;
 
     @JsonIgnore
-    @MapsId("permissionId")
+    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="permission_Id")
-    private Permission permission;
+    @JoinColumn(name="user_Id")
+    private User user;
 
-    public  RolePermission(){}
+    public RoleUser(){}
 
-    public RolePermission(Role role, Permission permission) {
+    public RoleUser(Role role, User user) {
         this.role = role;
-        this.permission = permission;
+        this.user = user;
     }
 
-    public RolePermissonId getId() {
+    public RoleUserId getId() {
         return id;
     }
 
-    public void setId(RolePermissonId id) {
+    public void setId(RoleUserId id) {
         this.id = id;
     }
 
@@ -45,20 +47,20 @@ public class RolePermission implements Serializable {
         this.role = role;
     }
 
-    public Permission getPermission() {
-        return permission;
+    public User getUser() {
+        return user;
     }
 
-    public void setPermission(Permission permission) {
-        this.permission = permission;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
     public String toString() {
-        return "RolePermission{" +
+        return "RoleUser{" +
                 "id=" + id +
                 ", role=" + role +
-                ", permission=" + permission +
+                ", user=" + user +
                 '}';
     }
 }

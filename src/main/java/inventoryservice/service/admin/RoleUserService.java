@@ -54,6 +54,11 @@ public class RoleUserService implements IService<RoleUser, RoleUserId> {
         return repository.findAll();
     }
 
+    @Override
+    public Boolean existsById(RoleUserId roleUserId) {
+        return repository.existsById(roleUserId);
+    }
+
     public List<User> getUserByRole(Role role){
         return repository.findUserIdByRole(role);
     }

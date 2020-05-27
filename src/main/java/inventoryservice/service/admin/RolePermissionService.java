@@ -57,6 +57,11 @@ public class RolePermissionService implements IService<RolePermission, RolePermi
         return repository.findAll();
     }
 
+    @Override
+    public Boolean existsById(RolePermissonId rolePermissonId) {
+        return repository.existsById(rolePermissonId);
+    }
+
 
     public List<Role> getRolePermission(Permission permission){
         return  repository.findRoleIdByPermissionId(permission);

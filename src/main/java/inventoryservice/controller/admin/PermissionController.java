@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/permission")
 public class PermissionController {
 
 
@@ -27,8 +26,12 @@ public class PermissionController {
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user!");
         }else {
+            if (service.existsById(permission.getPermissionId())==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Permission already exists");
+            }else {
             service.add(permission);
-            responseObject.setResponse(permission);
+            responseObject.setResponse(permission);}
         }
 
         System.out.println(permission.toString());

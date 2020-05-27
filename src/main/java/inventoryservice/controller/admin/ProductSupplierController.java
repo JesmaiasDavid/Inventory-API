@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 
 @RestController
 public class ProductSupplierController {
@@ -24,41 +26,45 @@ public class ProductSupplierController {
     @Autowired
     private SupplierService supplierService;
 
-    @PostMapping(value = "products/{productId}/suppliers/{supplierId}",consumes = "application/json")
+    @PostMapping(value = "suppliers/{supplierId}/products",consumes = "application/json")
     @ResponseBody
-    public ResponseEntity create(@RequestBody ProductSupplier productSupplier,@PathVariable int productId, @PathVariable int supplierId) {
-        Product product = productService.get(productId);
+    public ResponseEntity create(@RequestBody List<ProductQuantity> productQuantities,@PathVariable int supplierId) {
+
         Supplier supplier= supplierService.get(supplierId);
-        String quantitySupplied = Double.toString(productSupplier.getQuantitySupplied());
+        ProductSupplier productSupplier= new ProductSupplier();
 
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Product Supplier Created Successfully");
         if(supplier==null ){
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, supplier  does not exist!");
         }else
-        if(product==null){
-            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-            responseObject.setResponseDescription("Sorry, product  does not exist!");
-        }
-        else
-        if (quantitySupplied==null ){
+        if (productQuantities==null ){
             responseObject.setResponseCode(HttpStatus.BAD_REQUEST.toString());
-            responseObject.setResponseDescription("Please provide a product quantity to be supplied");
+            responseObject.setResponseDescription("Please provide a list of product Id and quantity");
         }else {
 
-            productSupplier.setId(new ProductSupplierId(product.getProductId(),supplier.getSupplierId()));
-            product.addProductSupplier(productSupplier);
-            supplier.addProductSupplier(productSupplier);
-            service.add(productSupplier);
-            responseObject.setResponse(productSupplier);
+            for (int i=0;i<productQuantities.size();i++) {
+                int productId=productQuantities.get(i).getProductId();
+                Product product = productService.get(productId);
+                Date now = new Date();
+                if (service.existsById(new ProductSupplierId(product.getProductId(), supplier.getSupplierId(),now)) == true) {
+                    responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                    responseObject.setResponseDescription("Product Supplier already exists");
+                } else {
+                    productSupplier.setId(new ProductSupplierId(product.getProductId(), supplier.getSupplierId(),now));
+                    productSupplier.setQuantitySupplied(productQuantities.get(i).getQuantity());
+                    product.addProductSupplier(productSupplier);
+                    supplier.addProductSupplier(productSupplier);
 
-            double quantityToSupply = productSupplier.getQuantitySupplied();
-            double quantityOnStock = product.getProductQuantity();
-            double sum = quantityOnStock + quantityToSupply;
-            product.setProductQuantity(sum);
-            productService.update(product);
-            System.out.println(product);
-
+                    service.add(productSupplier);
+                    responseObject.setResponse(productSupplier);
+                    double quantityToSupply = productSupplier.getQuantitySupplied();
+                    double quantityOnStock = product.getProductQuantity();
+                    double sum = quantityOnStock + quantityToSupply;
+                    product.setProductQuantity(sum);
+                    productService.update(product);
+                }
+            }
         }
 
         return ResponseEntity.ok(responseObject);

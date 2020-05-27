@@ -49,4 +49,9 @@ public class CategoryService implements IService<Category,Integer> {
     public List<Category> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

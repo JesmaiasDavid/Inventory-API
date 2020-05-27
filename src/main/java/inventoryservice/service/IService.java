@@ -8,4 +8,5 @@ public interface IService <T,ID>{
     void delete(ID id);
     T get(ID id);
     List<T> getAll();
+    Boolean existsById(ID id);
 }

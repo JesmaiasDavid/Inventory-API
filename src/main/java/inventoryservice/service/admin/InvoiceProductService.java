@@ -55,6 +55,11 @@ public class InvoiceProductService implements IService<InvoiceProduct, InvoicePr
         return repository.findAll();
     }
 
+    @Override
+    public Boolean existsById(InvoiceProductId invoiceProductId) {
+        return repository.existsById(invoiceProductId);
+    }
+
     public List<Invoice> getInvoicebyProductId(Product product){
         return  repository.findInvoiceIdByProductId(product);
     }
@@ -63,7 +68,5 @@ public class InvoiceProductService implements IService<InvoiceProduct, InvoicePr
         return repository.findProductIdByInvoiceId(invoice);
     }
 
-//    public List<Integer> getQuantityByInvoiceId(int invoiceId){
-//        return repository.findQuantityIdByInvoiceId(invoiceId);
-//    }
+
 }

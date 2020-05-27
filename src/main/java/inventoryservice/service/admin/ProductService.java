@@ -51,4 +51,9 @@ public class ProductService implements IService<Product,Integer> {
     public List<Product> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

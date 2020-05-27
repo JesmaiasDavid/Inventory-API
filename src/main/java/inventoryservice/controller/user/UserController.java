@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/users")
 public class UserController {
 
 
@@ -29,8 +28,12 @@ public class UserController {
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a first name and/or last name and/or email and/or address and/or created user and/or last modified user !");
         }else {
+            if (service.existsById(user.getUserId())==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("User already exists");
+            }else {
             service.add(user);
-            responseObject.setResponse(user);
+            responseObject.setResponse(user);}
         }
         System.out.println(user.toString());
         return ResponseEntity.ok(responseObject);
@@ -52,6 +55,7 @@ public class UserController {
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a first name and/or last name and/or email and/or address and/or created user and/or last modified user !");
         }else {
+
             user.setUserId(user1.getUserId());
             user.setCreatedUser(user1.getCreatedUser());
             user.setCreatedDateTime(user1.getCreatedDateTime());

@@ -50,4 +50,9 @@ public class PermissionService implements IService<Permission,Integer> {
     public List<Permission> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

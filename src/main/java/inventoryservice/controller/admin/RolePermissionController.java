@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/rolepermission")
 public class RolePermissionController {
 
     @Autowired
@@ -41,14 +40,17 @@ public class RolePermissionController {
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, permission not found!");
         }else {
-
+            if (service.existsById(new RolePermissonId(role.getRoleId(),permission.getPermissionId()))==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Role Permission already exists");
+            }else {
             RolePermission rolePermission = new RolePermission(role,permission);
 
             rolePermission.setId(new RolePermissonId(role.getRoleId(),permission.getPermissionId()));
             role.addRolePermission(rolePermission);
             permission.addRolePermission(rolePermission);
             service.add(rolePermission);
-            responseObject.setResponse(rolePermission);
+            responseObject.setResponse(rolePermission);}
         }
 
         return ResponseEntity.ok(responseObject);

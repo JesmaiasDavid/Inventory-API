@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/invoiceproduct")
 public class InvoiceProductController {
 
     @Autowired
@@ -25,47 +24,68 @@ public class InvoiceProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping(value = "/invoices/{invoiceId}/products/{productId}",consumes = "application/json")
+    @PostMapping(value = "/invoices/{invoiceId}/products", consumes = "application/json")
     @ResponseBody
-    public ResponseEntity create(@RequestBody InvoiceProduct invoiceProduct,@PathVariable int invoiceId, @PathVariable int productId) {
+    public ResponseEntity create(@RequestBody List<ProductQuantity> productQuantities, @PathVariable int invoiceId) {
         Invoice invoice = invoiceService.get(invoiceId);
-        Product product = productService.get(productId);
-        String quantity = Double.toString(invoiceProduct.getProductQuantity());
-
-        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"InvoiceProduct Created Successfully");
-        if(invoice==null ){
+        List <ResponseObject> responseObjects=new ArrayList<>();
+        InvoiceProduct invoiceProduct=new InvoiceProduct();
+        ResponseObject responseObject = new ResponseObject(HttpStatus.OK.toString(), "InvoiceProduct Created Successfully");
+        if (invoice == null) {
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, invoice  does not exist!");
-        }else
-            if(product==null){
-                responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-                responseObject.setResponseDescription("Sorry, product  does not exist!");
+        } else if (productQuantities == null) {
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Please provide a list of product Id and the quantity to buy!");
+        }  else {
+
+            for (int i=0;i<productQuantities.size();i++) {
+
+                int productId;
+                productId=productQuantities.get(i).getProductId();
+                Product product=productService.get(productId);
+
+                if(productService.existsById(productId)!=true){
+                    responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+                    responseObject.setResponseDescription("This product does not exist"+product.getProductId());
+                    responseObject.setResponse(null);
+                    responseObjects.add(responseObject);
+                }else
+                if (service.existsById(new InvoiceProductId(invoice.getInvoiceId(), productId))==true){
+                    responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                    responseObject.setResponseDescription("Invoice Product already exists"+product.getProductId());
+                    responseObject.setResponse(null);
+                    responseObjects.add(responseObject);
+                } else {
+
+                    invoiceProduct.setId(new InvoiceProductId(invoice.getInvoiceId(),productId));
+                    invoiceProduct.setProductQuantity(productQuantities.get(i).getQuantity());
+                    invoice.addInvoiceProduct(invoiceProduct);
+                    product.addInvoiceProduct(invoiceProduct);
+                    service.add(invoiceProduct);
+
+
+                    if ("successful".equals(invoice.getStatus())) {
+                        double quantityInStock = product.getProductQuantity();
+                        double quantityToBuy = invoiceProduct.getProductQuantity();
+                        double difference = quantityInStock - quantityToBuy;
+                        product.setProductQuantity(difference);
+                        productService.update(product);
+                    }
+                    responseObject.setResponseCode(HttpStatus.CREATED.toString());
+                    responseObject.setResponseDescription("InvoiceProduct Created Successfully"+product.getProductId());
+                    responseObject.setResponse(invoiceProduct);
+                    responseObjects.add(responseObject);
+                }
+
+            }
         }
-        else
-          if (quantity==null ){
-            responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
-            responseObject.setResponseDescription("Please provide a product quantity!");
-        }else {
 
-
-              invoiceProduct.setId(new InvoiceProductId(invoice.getInvoiceId(),product.getProductId()));
-              invoice.addInvoiceProduct(invoiceProduct);
-              product.addInvoiceProduct(invoiceProduct);
-              service.add(invoiceProduct);
-
-
-              if("successful".equals(invoice.getStatus())){
-                  double quantityInStock=product.getProductQuantity();
-                  double quantityToBuy=invoiceProduct.getProductQuantity();
-                  double difference=quantityInStock-quantityToBuy;
-                  product.setProductQuantity(difference);
-                  productService.update(product);
-              }
-              responseObject.setResponse(invoiceProduct);
+        for (int i=0;i<productQuantities.size();i++) {
+            System.out.println(productQuantities.get(i).getProductId());
         }
-
         System.out.println(invoiceProduct);
-        return ResponseEntity.ok(responseObject);
+        return ResponseEntity.ok(responseObjects);
     }
 
     @GetMapping("/products/{productId}/invoices")
@@ -108,21 +128,6 @@ public class InvoiceProductController {
         return ResponseEntity.ok(responseObject);
     }
 
-//    @GetMapping("/getQuantity/{invoiceId}")
-//    @ResponseBody
-//    public ResponseEntity getQuantityByInvoice(@PathVariable int invoiceId) {
-//        Invoice invoice=invoiceService.get(invoiceId);
-//        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Invoice Product Found Successfully");
-//        if (invoice==null){
-//            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-//            responseObject.setResponseDescription("Sorry, this invoice id does not exist!");
-//        }else{
-//
-//            List<Integer> list=service.getQuantityByInvoiceId(invoiceId);
-//            responseObject.setResponse(list);
-//        }
-//        return ResponseEntity.ok(responseObject);
-//    }
 
     @GetMapping("/invoices/products")
     @ResponseBody

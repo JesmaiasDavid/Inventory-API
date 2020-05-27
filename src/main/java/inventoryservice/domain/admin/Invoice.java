@@ -29,6 +29,8 @@ public class Invoice {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTimeGenerated;
 
+
+
     @JsonIgnore
     @OneToMany(mappedBy="invoice")
     private List<InvoiceProduct> invoiceProducts;

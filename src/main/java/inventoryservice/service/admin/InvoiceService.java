@@ -49,4 +49,9 @@ public class InvoiceService implements IService<Invoice,Integer> {
     public List<Invoice> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

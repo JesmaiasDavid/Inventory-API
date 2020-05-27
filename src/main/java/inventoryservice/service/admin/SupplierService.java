@@ -50,4 +50,9 @@ public class SupplierService implements IService<Supplier,Integer> {
     public List<Supplier> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

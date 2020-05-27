@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 public class InvoiceProduct implements Serializable {
@@ -23,8 +24,11 @@ public class InvoiceProduct implements Serializable {
     @JoinColumn(name="invoice_Id")
     private Invoice invoice;
 
-
     private int productQuantity;
+
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "invoiceProduct", cascade = CascadeType.ALL)
+//    private List<ProductQuantity> productQuantities;
 
     public InvoiceProduct(Product product, Invoice invoice, int productQuantity) {
         this.product = product;
@@ -66,6 +70,24 @@ public class InvoiceProduct implements Serializable {
     public void setProductQuantity(int productQuantity) {
         this.productQuantity = productQuantity;
     }
+
+//    public List<ProductQuantity> getProductQuantities() {
+//        return productQuantities;
+//    }
+//
+//    public void setProductQuantities(List<ProductQuantity> productQuantities) {
+//        this.productQuantities = productQuantities;
+//    }
+
+//    public void addProductQuantityEntity(ProductQuantity productQuantity) {
+//        getProductQuantities().add(productQuantity);
+//        productQuantity.setInvoiceProduct(this);
+//    }
+//
+//    public void removeProductQuantityEntity(ProductQuantity productQuantity) {
+//        getProductQuantities().remove(productQuantity);
+//        productQuantity.setInvoiceProduct(null);
+//    }
 
     @Override
     public String toString() {

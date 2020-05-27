@@ -6,30 +6,35 @@
 
 package inventoryservice.controller.admin;
 
-//import com.fasterxml.jackson.core.JsonProcessingException;
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.github.fge.jsonpatch.JsonPatch;
-//import com.github.fge.jsonpatch.JsonPatchException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import  javax.json.JsonPatch;
+import javax.json.JsonException;
+import com.github.fge.jsonpatch.JsonPatchException;
 import inventoryservice.domain.admin.Category;
 import inventoryservice.domain.admin.ResponseObject;
 import inventoryservice.service.admin.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
 import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
 public class CategoryController {
 
     @Autowired
     private CategoryService service;
 
-    @PostMapping(value = "",consumes = "application/json")
+    @PostMapping(value = "/categories",consumes = "application/json")
     @ResponseBody
     public ResponseEntity create(@RequestBody Category category) {
         ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category Created Successfully");
@@ -37,15 +42,20 @@ public class CategoryController {
             responseObject.setResponseCode(HttpStatus.PRECONDITION_FAILED.toString());
             responseObject.setResponseDescription("Please provide a name and/or created user and/or last  modified user!");
         }else {
-            service.add(category);
-            responseObject.setResponse(category);
+            if (service.existsById(category.getId())==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Category already exists");
+            }else {
+                service.add(category);
+                responseObject.setResponse(category);
+            }
         }
 
         System.out.println(category.toString());
         return ResponseEntity.ok(responseObject);
     }
 
-    @PutMapping(value = "/{id}",consumes = "application/json")
+    @PutMapping(value = "/categories/{id}",consumes = "application/json")
     @ResponseBody
     public ResponseEntity update(@RequestBody Category category,@PathVariable int id) {
 
@@ -73,7 +83,7 @@ public class CategoryController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/categories/{id}")
     @ResponseBody
     public ResponseEntity delete(@PathVariable int id) {
         Category category = service.get(id);
@@ -88,7 +98,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/categories/{id}")
     @ResponseBody
     public ResponseEntity get(@PathVariable int id) {
         Category category = service.get(id);
@@ -104,7 +114,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("")
+    @GetMapping("/categories")
     @ResponseBody
     public ResponseEntity getAll() {
         List<Category> categories = service.getAll();
@@ -119,49 +129,28 @@ public class CategoryController {
         return ResponseEntity.ok(responseObject);
     }
 
-//    @PatchMapping(path = "/{id}", consumes = "application/json-patch+json")
-//    public ResponseEntity updatePartially(@PathVariable int id, @RequestBody JsonPatch patch) {
-//        Category category = service.get(id);
-//        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category updated successfuly");
-//        if (category==null){
-//            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-//            responseObject.setResponseDescription("Sorry, category not found!");
-//        }else {
-//            try {
-//                Category categoryPatched = applyPatchToCategory(patch,category);
-//                service.update(categoryPatched);
-//                responseObject.setResponse(categoryPatched);
-//            } catch (JsonPatchException |JsonProcessingException ex) {
-//                 responseObject.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-//                 responseObject.setResponseDescription("Server problem");
-//            }
-//        }
-//
-//        return ResponseEntity.ok(responseObject);
-//    }
-//
-//
-//    private Category applyPatchToCategory(JsonPatch patch, Category targetCategory) throws JsonPatchException, JsonProcessingException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode patched = patch.apply(objectMapper.convertValue(targetCategory, JsonNode.class));
-//        return objectMapper.treeToValue(patched, Category.class);
-//    }
+    @PatchMapping(value = "/categories/{id}", consumes = "application/json-patch+json")
+    @ResponseBody
+    public ResponseEntity updatePartially(@PathVariable int id, @RequestBody JsonPatch patch) {
+        Category category = service.get(id);
+        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category Updated Successfully");
+        if(category==null){
+            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
+            responseObject.setResponseDescription("Sorry, category not found!");
+        }else{
+               Category category1=patchCategory(patch,category);
+               responseObject.setResponse(category1);
+        }
+            return ResponseEntity.ok(responseObject);
+    }
 
-//    @GetMapping("/{id}/products")
-//    @ResponseBody
-//    public ResponseEntity getCategoryproducts(@PathVariable int id) {
-//        Category category = service.get(id);
-//        ResponseObject responseObject= new ResponseObject(HttpStatus.OK.toString(),"Category Found Successfully");
-//        if (category==null){
-//            responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
-//            responseObject.setResponseDescription("Sorry, this category does not exist!");
-//        }else{
-//
-//            responseObject.setResponse(category.getProducts());
-//        }
-//        return ResponseEntity.ok(responseObject);
-//    }
-
-
+    private Category patchCategory(JsonPatch patch, Category targetCategory)  {
+        ObjectMapper objectMapper=new ObjectMapper();
+        JsonStructure target = objectMapper.convertValue(targetCategory, JsonStructure.class);
+         JsonValue patchedCategory=patch.apply(target);
+         Category modifiedCategory=objectMapper.convertValue(patchedCategory,Category.class);
+         service.update(modifiedCategory);
+         return  modifiedCategory;
+    }
 
 }

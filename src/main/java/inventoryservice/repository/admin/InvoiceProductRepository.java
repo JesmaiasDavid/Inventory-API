@@ -19,11 +19,4 @@ public interface InvoiceProductRepository extends JpaRepository<InvoiceProduct, 
     @Query("select product from  InvoiceProduct u where u.invoice in(?1)")
     List<Product> findProductIdByInvoiceId(Invoice invoice);
 
-//    @Query ("select productId, productQuantity from InvoiceProduct u where u.invoiceId in (?1)")
-//    List<Integer> findByInvoiceId(int invoiceId);
-//
-//
-//    @Query("select productQuantity from  InvoiceProduct u where u.invoiceId in(?1)")
-//    List<Integer> findQuantityIdByInvoiceId(int invoiceId);
-
 }

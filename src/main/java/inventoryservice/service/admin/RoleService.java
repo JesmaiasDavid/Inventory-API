@@ -53,4 +53,9 @@ public class RoleService implements IService<Role,Integer> {
     public List<Role> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

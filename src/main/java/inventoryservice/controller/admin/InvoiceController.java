@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/invoice")
 public class InvoiceController {
 
     @Autowired
@@ -51,10 +50,14 @@ public class InvoiceController {
             responseObject.setResponseDescription("Enter a total and/or status");
         }else {
 
+            if (service.existsById(invoice.getInvoiceId())==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Invoice already exists");
+            }else {
             invoice.setInvoiceId(invoice1.getInvoiceId());
             invoice.setDateTimeGenerated(invoice1.getDateTimeGenerated());
             service.add(invoice);
-            responseObject.setResponse(invoice);
+            responseObject.setResponse(invoice);}
         }
 
         System.out.println(invoice.toString());

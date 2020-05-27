@@ -51,4 +51,9 @@ public class UserService implements IService<User,Integer> {
     public List<User> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public Boolean existsById(Integer integer) {
+        return repository.existsById(integer);
+    }
 }

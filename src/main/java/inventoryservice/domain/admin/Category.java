@@ -2,25 +2,23 @@ package inventoryservice.domain.admin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Category  {
+public class Category {
 
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="category_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
     @SequenceGenerator(
-          name="category_seq",
-         sequenceName="category_sequence",
-         allocationSize=1)
+            name = "category_seq",
+            sequenceName = "category_sequence",
+            allocationSize = 1)
     private int id;
 
     private String categoryName;
@@ -39,16 +37,12 @@ public class Category  {
 
     //bi-directional many-to-one association to Product
     @JsonIgnore
-    @OneToMany(mappedBy="category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products;
 
-    //bi-directional many-to-one association to Stock
-    @OneToMany(mappedBy="category")
-    private List<Stock> stocks;
 
-
-
-    public Category(){}
+    public Category() {
+    }
 
     public int getId() {
         return id;
@@ -108,17 +102,6 @@ public class Category  {
         this.products = products;
     }
 
-    @JsonIgnore
-    public List<Stock> getStocks() {
-        return stocks;
-    }
-
-    @JsonIgnore
-    public void setStocks(List<Stock> stocks) {
-        this.stocks = stocks;
-    }
-
-
 
     public void addProduct(Product product) {
         getProducts().add(product);
@@ -139,10 +122,9 @@ public class Category  {
     @PrePersist
     public void prePersist() {
         Date now = new Date();
-        createdDateTime=now;
+        createdDateTime = now;
         lastModifiedDateTime = now;
     }
-
 
 
     @Override

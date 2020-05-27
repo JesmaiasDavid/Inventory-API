@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/userrole")
 public class RoleUserController {
 
     @Autowired
@@ -46,7 +45,10 @@ private RoleUserService service;
             responseObject.setResponseCode(HttpStatus.NOT_FOUND.toString());
             responseObject.setResponseDescription("Sorry, user not found!");
         }else {
-
+            if (service.existsById(new RoleUserId(role.getRoleId(),user.getUserId()))==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Role User already exists");
+            }else {
             RoleUser roleUser = new RoleUser(role,user);
             roleUser.setId(new RoleUserId(role.getRoleId(),user.getUserId()));
 
@@ -54,7 +56,7 @@ private RoleUserService service;
             user.addRoleUser(roleUser);
 
             service.add(roleUser);
-            responseObject.setResponse(roleUser);
+            responseObject.setResponse(roleUser);}
         }
 
         return ResponseEntity.ok(responseObject);

@@ -42,6 +42,7 @@ public class Product {
     private String lastModifiedUser;
 
     //bi-directional many-to-one association to Category
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="categoryId")
     private Category category;
@@ -50,8 +51,7 @@ public class Product {
     @OneToMany(mappedBy="product")
     private List<InvoiceProduct> invoiceProducts;
 
-    @OneToMany(mappedBy="product")
-    private List<Stock> stocks;
+
 
 
     @JsonIgnore

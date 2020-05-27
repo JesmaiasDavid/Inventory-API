@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/categories")
 public class ProductController {
 
     @Autowired
@@ -41,9 +40,13 @@ public class ProductController {
             responseObject.setResponseDescription("Please provide a name and/or created user and/or last modified user and/or buying price and/or selling price and/or product Quantity!");
         }else {
 
+            if (service.existsById(product.getProductId())==true){
+                responseObject.setResponseCode(HttpStatus.FORBIDDEN.toString());
+                responseObject.setResponseDescription("Product already exists");
+            }else {
            category.addProduct(product);
             service.add(product);
-            responseObject.setResponse(product);
+            responseObject.setResponse(product);}
         }
 
         System.out.println(product.toString());
