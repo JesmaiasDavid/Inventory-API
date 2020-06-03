@@ -11,7 +11,7 @@ public class InvoiceProductId implements Serializable {
 
     private int productId;
 
-    InvoiceProductId(){}
+    public InvoiceProductId(){}
 
     public InvoiceProductId(int invoiceId, int productId) {
         this.invoiceId = invoiceId;

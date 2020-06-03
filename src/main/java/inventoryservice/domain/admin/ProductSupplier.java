@@ -14,13 +14,13 @@ public class ProductSupplier implements Serializable {
     @JsonIgnore
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="product_Id")
+    @JoinColumn(name="product_id")
     private Product product;
 
     @JsonIgnore
     @MapsId("supplierId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="supplier_Id")
+    @JoinColumn(name="supplier_id")
     private Supplier supplier;
 
    private double quantitySupplied;
