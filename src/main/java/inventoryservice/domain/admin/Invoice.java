@@ -18,8 +18,7 @@ public class Invoice {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="invoice_seq")
     @SequenceGenerator(
             name="invoice_seq",
-            sequenceName="invoice_sequence",
-            allocationSize=1)
+            sequenceName="invoice_sequence")
     private int invoiceId;
 
     private double total;

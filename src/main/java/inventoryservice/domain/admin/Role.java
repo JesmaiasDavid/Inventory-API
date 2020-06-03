@@ -13,8 +13,7 @@ public class Role {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="role_seq")
     @SequenceGenerator(
             name="role_seq",
-            sequenceName="role_sequence",
-            allocationSize=1)
+            sequenceName="role_sequence")
     private int roleId;
 
     private String roleName;
@@ -37,7 +36,7 @@ public class Role {
     @OneToMany(mappedBy="role")
     private List<RolePermission> rolePermissions;
 
-    Role() {
+    public Role() {
     }
 
     public List<RolePermission> getRolePermissions() {

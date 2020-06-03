@@ -13,8 +13,7 @@ public class Supplier {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="supplier_seq")
     @SequenceGenerator(
             name="supplier_seq",
-            sequenceName="supplier_sequence",
-            allocationSize=1)
+            sequenceName="supplier_sequence")
     private int supplierId;
 
     private String supplierName;
@@ -35,7 +34,7 @@ public class Supplier {
     @OneToMany(mappedBy="supplier", orphanRemoval = true)
     private List<ProductSupplier>  productSuppliers;
 
-    Supplier() {
+    public Supplier() {
     }
 
     public int getSupplierId() {

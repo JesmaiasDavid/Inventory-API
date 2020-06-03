@@ -16,8 +16,7 @@ public class User {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="user_seq")
     @SequenceGenerator(
             name="user_seq",
-            sequenceName="user_sequence",
-            allocationSize=1)
+            sequenceName="user_sequence")
     private int userId;
 
     private String userEmail;
@@ -41,7 +40,7 @@ public class User {
     @OneToMany(mappedBy="role")
     private List<RoleUser> roleUsers;
 
-    User() {
+    public User() {
     }
 
     public List<RoleUser> getRoleUsers() {

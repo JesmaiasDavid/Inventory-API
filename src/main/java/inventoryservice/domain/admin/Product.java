@@ -19,8 +19,7 @@ public class Product {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="product_seq")
     @SequenceGenerator(
             name="product_seq",
-            sequenceName="product_sequence",
-            allocationSize=1)
+            sequenceName="product_sequence")
     private int productId;
 
     private String productName;
@@ -44,7 +43,6 @@ public class Product {
     //bi-directional many-to-one association to Category
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="categoryId")
     private Category category;
 
     @JsonIgnore
@@ -71,7 +69,7 @@ public class Product {
         createdDateTime=now;
     }
 
-    Product() {
+    public Product() {
     }
 
     public List<InvoiceProduct> getInvoiceProducts() {

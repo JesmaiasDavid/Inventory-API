@@ -12,15 +12,15 @@ public class ProductSupplierId implements Serializable {
 
     private int supplierId;
 
-    private Date now;
+    private Date createdDateTime;
 
-    public ProductSupplierId() {
+     public ProductSupplierId() {
     }
 
-    public ProductSupplierId(int productId, int supplierId, Date now) {
+    public ProductSupplierId(int productId, int supplierId, Date createdDateTime) {
         this.productId = productId;
         this.supplierId = supplierId;
-        this.now=now;
+        this.createdDateTime = createdDateTime;
     }
 
     public int getProductId() {
@@ -39,26 +39,26 @@ public class ProductSupplierId implements Serializable {
         this.supplierId = supplierId;
     }
 
-    public Date getNow() {
-        return now;
+    public Date getCreatedDateTime() {
+        return createdDateTime;
     }
 
-    public void setNow(Date now) {
-        this.now = now;
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProductSupplierId)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         ProductSupplierId that = (ProductSupplierId) o;
         return productId == that.productId &&
                 supplierId == that.supplierId &&
-                Objects.equals(now, that.now);
+                Objects.equals(createdDateTime, that.createdDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, supplierId, now);
+        return Objects.hash(productId, supplierId, createdDateTime);
     }
 }
